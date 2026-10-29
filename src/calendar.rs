@@ -13,7 +13,7 @@ use google_calendar3::{
     },
 };
 
-use crate::{Config, Result, app::EventNode, constants::SCOPE, logging};
+use crate::{Config, Error, Result, app::EventNode, constants::SCOPE, logging};
 
 type Hub = CalendarHub<HttpsConnector<HttpConnector>>;
 
