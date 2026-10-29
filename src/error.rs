@@ -17,6 +17,7 @@ pub enum Error {
     Shell(shellexpand::LookupError<VarError>),
 
     ConfigNotFound,
+    OAuthCredentialsNotFound(String),
 }
 
 impl From<google_calendar3::Error> for Error {
@@ -29,7 +30,10 @@ impl From<google_calendar3::Error> for Error {
 
 impl core::fmt::Display for Error {
     fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::result::Result<(), core::fmt::Error> {
-        write!(fmt, "{self:?}")
+        match self {
+            Error::OAuthCredentialsNotFound(msg) => write!(fmt, "{msg}"),
+            _ => write!(fmt, "{self:?}"),
+        }
     }
 }
 

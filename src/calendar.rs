@@ -77,20 +77,35 @@ impl Calendar {
             _ => {
                 let client_id = std::env::var("GCAL_CLIENT_ID")
                     .map(|s| s.trim_matches('"').trim_matches('\'').trim().to_string())
-                    .unwrap_or_else(|_| "883838279262-d27s1a8g1k8945t3v1256338b8h9j87b.apps.googleusercontent.com".to_string());
+                    .ok();
                 let client_secret = std::env::var("GCAL_CLIENT_SECRET")
                     .map(|s| s.trim_matches('"').trim_matches('\'').trim().to_string())
-                    .unwrap_or_else(|_| "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t".to_string());
-                yup_oauth2::ApplicationSecret {
-                    client_id,
-                    client_secret,
-                    token_uri: "https://oauth2.googleapis.com/token".to_string(),
-                    auth_uri: "https://accounts.google.com/o/oauth2/auth".to_string(),
-                    redirect_uris: vec!["http://localhost".to_string(), "http://127.0.0.1".to_string()],
-                    project_id: None,
-                    client_email: None,
-                    auth_provider_x509_cert_url: None,
-                    client_x509_cert_url: None,
+                    .ok();
+
+                match (client_id, client_secret) {
+                    (Some(id), Some(secret)) if !id.is_empty() && !secret.is_empty() => {
+                        yup_oauth2::ApplicationSecret {
+                            client_id: id,
+                            client_secret: secret,
+                            token_uri: "https://oauth2.googleapis.com/token".to_string(),
+                            auth_uri: "https://accounts.google.com/o/oauth2/auth".to_string(),
+                            redirect_uris: vec!["http://localhost".to_string(), "http://127.0.0.1".to_string()],
+                            project_id: None,
+                            client_email: None,
+                            auth_provider_x509_cert_url: None,
+                            client_x509_cert_url: None,
+                        }
+                    }
+                    _ => {
+                        return Err(Error::OAuthCredentialsNotFound(
+                            "Google Calendar OAuth credentials not found.\n\
+                            Please provide credentials via:\n  \
+                            1. GCAL_CLIENT_ID and GCAL_CLIENT_SECRET in .env\n  \
+                            2. Or specify client_file = \"path/to/client_secret.json\" in config.toml\n\
+                            See .env.example or README.md for setup instructions."
+                                .to_string(),
+                        ));
+                    }
                 }
             }
         };
