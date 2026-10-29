@@ -1,0 +1,38 @@
+[package]
+name = "j-gcal"
+version = "0.1.1"
+description = "TUI for google calendar"
+authors = ["jobin_nelson <jobinnelson369@gmail.com>"]
+license = "MIT"
+edition = "2024"
+repository = "https://github.com/jobin-nelson/gcal-tui"
+
+[dependencies]
+chrono = "0.4.44"
+config = "0.15.23"
+crossterm = { version = "0.29.0", features = ["event-stream"] }
+derive_more = { version = "2.1.1", features = ["from"] }
+directories = "6.0.0"
+dotenvy = "0.15.7"
+futures = "0.3.32"
+google-calendar3 = "7.0.0"
+ratatui = { version = "0.30.0", features = ["crossterm_0_29"] }
+ratatui-textarea = "0.9.2"
+serde = "1.0.228"
+serde_json = "1.0.150"
+shellexpand = "3.1.2"
+tokio = { version = "1.52.3", features = ["full"] }
+toml = "1.1.2"
+tracing = "0.1.44"
+tracing-error = "0.2.1"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+
+[profile.release]
+codegen-units = 1 # Allows compiler to perform better optimization.
+lto = true # Enables Link-time Optimization.
+opt-level = "s" # Prioritizes small binary size. Use `3` if you prefer speed.
+strip = true # Ensures debug symbols are removed.
+
+[[bin]]
+name = "gcal"
+path = "src/main.rs"
